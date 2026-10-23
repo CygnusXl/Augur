@@ -226,7 +226,7 @@ Table~\ref{tab:storage} shows end-to-end speedup over an LRU cache without prefe
 A model that predicts data can make it smaller, often substantially, and exactly. Whether that makes it faster depends on how cheap the prediction is relative to the time saved. In our measurements, a context-mixing codec beat five standard codecs on size for text-like data but would need decoding 16--53 times faster to win on time at 2\,Mbit/s, and simulated prefetching helped only where access history repeated. Next steps are real-I/O tests with cold-cache control, an optimized and parallel codec, a small neural byte predictor, and a network study of server-side prediction with client feedback.
 
 \section*{Availability}
-Code, corpus builder with hashes, raw measurements, and this paper's source are at \url{https://github.com/CygnusXl/Augur} (tag \texttt{paper-v1}).
+Code, corpus builder with hashes, raw measurements, and this paper's source are at \url{https://github.com/CygnusXl/Augur} (version 0.2.0).
 
 \section*{Acknowledgment}
 Experiment design, code and drafting were carried out with substantial assistance from Claude, an AI assistant from Anthropic. The author is responsible for the content.
