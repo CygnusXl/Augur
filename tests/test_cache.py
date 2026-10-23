@@ -2,7 +2,7 @@ import random
 
 import pytest
 
-from augur.cache import ByteCache
+from augur.core.cache import ByteCache
 
 
 @pytest.mark.parametrize("policy", ["lru", "lfu"])

@@ -4,17 +4,22 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "augur"
-version = "0.1.0"
-description = "Does learned prefetching beat conventional prefetching? A measured, user-space study."
+version = "0.2.0"
+description = "Does predicting data make it faster to store and move? A measured study of predictive prefetching and exact predictive coding."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = []
 
 [project.optional-dependencies]
 dev = ["pytest>=7"]
+bench = ["zstandard>=0.22", "brotli>=1.1"]
+paper = ["matplotlib>=3.7", "zstandard>=0.22", "brotli>=1.1"]
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+"augur.content" = ["*.c"]
 
 [tool.pytest.ini_options]
 pythonpath = ["src"]

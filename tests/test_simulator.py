@@ -2,10 +2,10 @@ import random
 
 import pytest
 
-from augur.predictors import Candidate, MarkovPredictor, NoPredictor, OraclePredictor, Predictor, SequentialPredictor
-from augur.scheduler import PrefetchScheduler, SchedulerConfig
-from augur.simulator import DEVICES, SimConfig, simulate
-from augur.traces import MiB, WORKLOADS, sequential
+from augur.core.predictors import Candidate, MarkovPredictor, NoPredictor, OraclePredictor, Predictor, SequentialPredictor
+from augur.core.scheduler import PrefetchScheduler, SchedulerConfig
+from augur.storage.simulator import DEVICES, SimConfig, simulate
+from augur.storage.traces import MiB, WORKLOADS, sequential
 
 
 def cfg(trace, frac=0.05, **kw):

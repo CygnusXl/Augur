@@ -1,4 +1,4 @@
-from augur.predictors import (
+from augur.core.predictors import (
     MarkovPredictor,
     NoPredictor,
     OraclePredictor,

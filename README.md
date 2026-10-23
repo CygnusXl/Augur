@@ -2,86 +2,73 @@
 
 > What if your computer already knew what you were about to read?
 
-augur is an experiment, not a product. It asks one question and answers it with measurements:
+augur is a research testbed, not a product. It asks one question and answers it with measurements:
 
-**Can a learned predictor make data-intensive programs measurably faster by guessing which files, blocks or dataset samples will be requested next, and fetching them into a bounded cache before they are asked for?**
+**Does predicting data make it faster to store and move?**
 
-It does not assume the answer is yes, and it does not assume the idea is new. Operating systems already do readahead, and there is a body of prior work on learned and heuristic prefetching (see the feasibility report). The point here is to find out *where*, if anywhere, a learned layer beats those baselines once its CPU, memory and wasted-read costs are counted.
+It studies two kinds of prediction under one framework: predicting *which item is requested next* (so it can be prefetched into a bounded cache), and predicting *the content of the data itself* (so a sender and receiver that share a model only transmit the surprises). It does not assume the answer is yes, and it does not claim the ideas are new: prefetching, learned caching and model-based compression are all established. See the paper for related work.
 
-## Status
+**Paper:** [`paper/augur.pdf`](paper/augur.pdf) (IEEE conference format; LaTeX source in `paper/`).
 
-| Stage | What | State |
-| --- | --- | --- |
-| 1 | Device baseline (cold vs warm reads on your drive) | script ready, run it on your machine |
-| 2 | Trace generators, byte-bounded cache, event simulator | done, tested |
-| 3 | Heuristic predictors (sequential, stride, Markov) and confidence-gated scheduler | done, tested |
-| 4 | Real-I/O harness (thread-pool prefetcher, checksum-verified reads) | not started |
-| 5 | Small learned model (MLP/GRU), inference cost timed separately | not started |
-| 6 | Real image-dataset loading workload | not started |
-| 7 | Ablations and final report | not started |
+## What the measurements say so far
+
+Measured on one machine (2 virtual CPUs); speeds are relative, sizes are exact. Every output was decoded and checked byte for byte.
+
+- **Prediction makes data smaller.** `augur-cm`, a small exact context-mixing codec, produced the smallest output on 6 of 7 compressible real files: 6.8–31.5 % smaller than the best of gzip, bzip2, xz, zstd and brotli. On one executable xz was 5.2 % smaller. Random and already-compressed data cannot be shrunk; the codec stores them raw at a cost of one byte.
+- **It does not (yet) make transfer faster.** `augur-cm` decodes at about 0.5 MB/s, over a thousand times slower than zstd. It is the fastest option on a link only below roughly 0.04–0.11 Mbit/s, and would need 16–53× faster decoding to win at 2 Mbit/s.
+- **Simulated prefetching helps only where history repeats** (1.08–1.10× for the default Markov predictor on recurring access; none on random or reshuffled access), and trusting single observations can slow a workload to 0.36×. These storage results are simulated with nominal device parameters, not measured on a real drive.
+
+Full tables: [`results/content/compression.md`](results/content/compression.md), [`ablation.md`](results/content/ablation.md), [`breakeven.md`](results/content/breakeven.md), and the storage summaries in `results/`.
 
 ## Quick start
 
 ```bash
-pip install -e ".[dev]"      # no runtime dependencies; pytest only for tests
-pytest                        # 80 tests: cache correctness, bad predictions, memory limits
-python scripts/device_baseline.py --dir /path/on/your/drive --size-mib 1024
-python -m augur.bench --device sata_ssd --seeds 3 --out results
-```
+pip install -e ".[dev,bench]"    # pytest, zstandard, brotli; the codec needs a C compiler (cc)
+pytest                           # 98 tests
 
-`python -m augur.bench --help` lists options (device model, cache fraction, think time, prefetch depth and threshold, workloads, configurations).
+# Content domain: build the corpus, then compare codecs
+python scripts/build_corpus.py --out data
+python -m augur.content.bench  --corpus data/test --out results/content
+python -m augur.content.ablate --corpus data/test --out results/content
+
+# Storage domain: simulated prefetching experiments
+python -m augur.storage.bench --device sata_ssd --seeds 3 --out results
+
+# Real drive: check that cold reads can be forced before trusting any I/O result
+python scripts/device_baseline.py --dir /path/on/your/drive --size-mib 1024
+
+# Regenerate the paper's tables and figures from the results, then build it
+pip install -e ".[paper]" && python scripts/make_paper_artifacts.py
+cd paper && latexmk -pdf augur.tex
+```
 
 ## Layout
 
 ```
 src/augur/
-  traces.py      reproducible seeded workloads
-  cache.py       byte-bounded LRU/LFU cache; stores values untouched
-  predictors.py  sequential, stride, Markov (order-k, back-off), clairvoyant oracle
-  scheduler.py   confidence threshold, in-flight and byte caps, optional back-off
-  simulator.py   trace-driven simulator with one FIFO storage device
-  bench.py       workloads x configurations x seeds, identical conditions
-tests/           pytest suite
-scripts/         device_baseline.py
-results/         reference summaries (simulated)
+  core/      byte-bounded cache, predictors (sequential, stride, Markov, oracle), scheduler
+  storage/   seeded access traces, trace-driven simulator, benchmark runner
+  content/   augur_cm.c exact predictive codec, Python binding, corpus benchmark, ablations
+  network/   closed-form model of when coding beats sending raw bytes
+tests/       pytest suite (cache correctness, bad predictions, memory limits, codec round trips)
+scripts/     build_corpus.py, device_baseline.py, make_paper_artifacts.py
+paper/       IEEE-format paper, generated tables and figures, bibliography
+results/     measured and simulated results
 ```
 
 ## Read this before trusting any number
 
-- **The results in `results/` are simulated.** The device profiles (`hdd`, `sata_ssd`, `nvme`) are nominal order-of-magnitude assumptions, not measurements of any drive. The simulator ignores the OS page cache and parallel I/O queues. Treat rankings as hypotheses for the real-I/O stage, not as findings.
-- **Outcomes depend on think time versus device speed.** With the default 100 us of compute between requests, prefetching helps on the NVMe and SATA models and *hurts* on the HDD model (reads are far slower than the compute they could overlap with, so extra reads only add contention). Change `--think-us` and the picture changes.
-- **The "recurring routines" workload is my construction** to test the niche where history-based prediction should help. It is not a recording of any real application.
-- **Frequency-based prediction is covered by LFU eviction**, not implemented as a prefetch predictor, because it would mostly name items that are already cached.
-- The oracle predictor is an upper bound (it reads the future from the trace), not a deployable method.
-
-## Simulated results so far (3 seeds, 20k accesses, cache = 5% of data, sata_ssd model)
-
-Speedup is end-to-end time versus an LRU cache with no prefetching.
-
-| workload | sequential | stride | markov2 | markov2+gate | oracle |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| sequential | 1.38x | 1.38x | 1.00x | 1.00x | 1.38x |
-| random | 1.00x | 1.00x | 1.00x | 1.00x | 1.28x |
-| zipf working set | 1.00x | 1.00x | 1.00x | 1.00x | 1.50x |
-| phased | 1.06x | 1.13x | 0.99x | 1.02x | 1.30x |
-| recurring routines | 1.00x | 1.00x | 1.08x | 1.10x | 1.28x |
-| DL, reshuffled each epoch | 1.00x | 1.00x | 1.00x | 1.00x | 1.31x |
-| DL, fixed order | 1.00x | 1.00x | 1.09x | 1.09x | 1.31x |
-
-What this suggests, to be confirmed on real I/O:
-
-1. Conventional readahead already captures the sequential case; a learned model adds nothing there.
-2. A history-based predictor only helps when history repeats (routines, fixed-order epochs). On random and freshly reshuffled access it has nothing to learn.
-3. Accuracy is not speed. In `recurring_routines` Markov reaches 85% accuracy but only ~1.08x, and its P99 latency is far worse than LRU's because wasted prefetches queue ahead of real requests.
-4. Trusting a single observation is dangerous. The `markov2-naive` ablation (one sighting = full confidence) falls to 0.36x on reshuffled data. The shipped default requires two observations and smooths confidence, at the cost of learning more slowly (compare `dl_fixed_order`: 1.09x default versus 1.19x naive over only three epochs).
-5. A confidence gate that backs off when recent prefetches go to waste is cheap insurance.
-
-Full tables: `results/summary_sata_ssd.md`, `summary_hdd.md`, `summary_nvme.md`.
+- The **storage results are simulated.** Device profiles (`hdd`, `sata_ssd`, `nvme`) are nominal assumptions. The simulator ignores the OS page cache and parallel I/O queues.
+- The **content results are measured**, but on one shared virtual machine with files of at most 1 MiB, including machine-local files. The corpus is not committed; `scripts/build_corpus.py` rebuilds it and writes a SHA-256 manifest. Gains on other data may differ.
+- `augur-cm` is a small, unoptimized model in the lpaq family. It was not compared against PAQ8, cmix or NNCP, so nothing here claims to beat the state of the art.
+- The **learned neural predictor** from the original plan has not been built. Only heuristic, Markov and context-mixing predictors are evaluated.
+- The "recurring routines" workload is our own construction, not a recording of a real application.
+- Network-transfer numbers come from a closed-form model fed with measured ratios and speeds. They ignore TCP dynamics, loss and parallel connections. No server-push or client-hint protocol has been built.
 
 ## Roadmap
 
-Real-I/O harness with cold-cache control (`posix_fadvise(DONTNEED)` is advisory; `O_DIRECT` where needed) and checksum verification of every served byte; a small learned model trained offline on a trace prefix with inference time reported separately; a PyTorch `DataLoader` workload on a real image set; ablations; and an honest verdict on whether the learned layer earns its complexity.
+Real-I/O harness with cold-cache control and checksum-verified reads; an optimized and chunk-parallel codec; a small neural byte predictor with inference cost reported separately; a network study of server-side prediction with client budget hints; a real image-dataset loading workload.
 
-## Limitations and known failure cases
+## Licence note
 
-Single-process, single-device model; no kernel integration; Markov tables grow with distinct contexts (no eviction of model state yet); online learning only; traces are synthetic until stage 6.
+`paper/IEEEtran.cls` and `paper/IEEEtran.bst` are the unmodified IEEE LaTeX class and style (LPPL).

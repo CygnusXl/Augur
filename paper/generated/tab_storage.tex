@@ -1,0 +1,13 @@
+\begin{tabular}{@{}lrrrrrr@{}}
+\toprule
+Workload & sequential & stride & markov2 & markov2+gate & markov2-naive & oracle \\
+\midrule
+sequential & 1.38 & 1.38 & 1.00 & 1.00 & 1.00 & 1.38 \\
+random & 1.00 & 1.00 & 1.00 & 1.00 & 0.52 & 1.28 \\
+Zipf working set & 1.00 & 1.00 & 1.00 & 1.00 & 0.73 & 1.50 \\
+phased & 1.06 & 1.13 & 0.99 & 1.02 & 0.69 & 1.30 \\
+recurring routines & 1.00 & 1.00 & 1.08 & 1.10 & 1.05 & 1.28 \\
+DL, reshuffled & 1.00 & 1.00 & 1.00 & 1.00 & 0.36 & 1.31 \\
+DL, fixed order & 1.00 & 1.00 & 1.09 & 1.09 & 1.19 & 1.31 \\
+\bottomrule
+\end{tabular}

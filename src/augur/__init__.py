@@ -1,3 +1,3 @@
-"""augur: a measured study of predictive prefetching in user space."""
+"""augur: does predicting data make it faster to store and move? A measured study."""
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"

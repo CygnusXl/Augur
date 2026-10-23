@@ -1,5 +1,5 @@
-from augur.predictors import Candidate
-from augur.scheduler import PrefetchScheduler, SchedulerConfig
+from augur.core.predictors import Candidate
+from augur.core.scheduler import PrefetchScheduler, SchedulerConfig
 
 SIZES = {i: 1000 for i in range(50)}
 NEVER = lambda i: False

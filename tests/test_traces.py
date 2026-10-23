@@ -1,6 +1,6 @@
 import pytest
 
-from augur.traces import WORKLOADS
+from augur.storage.traces import WORKLOADS
 
 
 @pytest.mark.parametrize("name", list(WORKLOADS))

@@ -1,6 +1,6 @@
 """Benchmark runner: workloads x configurations x seeds, on identical traces.
 
-    python -m augur.bench --device sata_ssd --seeds 3 --out results
+    python -m augur.storage.bench --device sata_ssd --seeds 3 --out results
 
 Every configuration sees the same trace, the same cache byte budget, the same
 device model and the same prefetch limits. Numbers are medians across seeds.
@@ -16,7 +16,7 @@ from dataclasses import dataclass
 from statistics import median
 from typing import Callable, Dict, List
 
-from .predictors import (
+from ..core.predictors import (
     MarkovPredictor,
     NoPredictor,
     OraclePredictor,
@@ -24,7 +24,7 @@ from .predictors import (
     SequentialPredictor,
     StridePredictor,
 )
-from .scheduler import PrefetchScheduler, SchedulerConfig
+from ..core.scheduler import PrefetchScheduler, SchedulerConfig
 from .simulator import DEVICES, SimConfig, simulate
 from .traces import MiB, WORKLOADS, Trace
 

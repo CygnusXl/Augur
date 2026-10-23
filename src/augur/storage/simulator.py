@@ -20,9 +20,9 @@ from dataclasses import dataclass, field
 from statistics import median
 from typing import Dict, List, Optional
 
-from .cache import ByteCache, Entry
-from .predictors import NoPredictor, Predictor
-from .scheduler import PrefetchScheduler, SchedulerConfig
+from ..core.cache import ByteCache, Entry
+from ..core.predictors import NoPredictor, Predictor
+from ..core.scheduler import PrefetchScheduler, SchedulerConfig
 from .traces import Trace
 
 HIT_COST_S = 2e-6  # serving from memory
