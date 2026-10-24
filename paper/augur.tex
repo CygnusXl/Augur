@@ -194,15 +194,15 @@ Applying Eq.~(\ref{eq:be}) to the measured ratio and speed gives Table~\ref{tab:
 \input{generated/tab_crossover}
 \end{table}
 
-\begin{table*}[!t]
-\caption{Ablation of \cm{}: bits per byte (change from the full model). Speed is the median compress throughput over the six files.}
+\begin{table}[!t]
+\caption{Ablation of \cm{}. $\Delta$ is the change in compressed size relative to the full model, as the mean and range over the five non-DNA files (source code, prose, log, JSON, executable); DNA is the bacterial genome. MB/s is the median compress throughput over the five files. Per-file values are in the repository.}
 \label{tab:abl}
 \centering\scriptsize
 \input{generated/tab_ablation}
-\end{table*}
+\end{table}
 
 \subsection{Ablation}
-Table~\ref{tab:abl} varies the model. Removing the match model costs 4.0--20.6\,\% on every non-DNA file, so it is the most valuable single component. Restricting contexts to orders 1--4 costs 0.3--3.9\,\% and more than doubles speed (1.20 versus 0.54\,MB/s); a single order-2 context costs 3.2--24.5\,\% but runs nearly four times faster. Orders 8 and 12 add up to 2.4\,\%. Table size matters: $2^{16}$ slots costs 6.1--10.5\,\%, while $2^{24}$ slots gains only 0.5--1.0\,\% at four times the memory (512\,MiB) and less than half the speed. DNA is nearly unaffected by every variant (within 0.3\,\%), which shows that byte-oriented contexts do not exploit its four-letter structure; a model built for that alphabet would likely do better, but we did not test one.
+Table~\ref{tab:abl} varies the model. Removing the match model costs 4.0--20.6\,\% on every non-DNA file, so it is the most valuable single component. Restricting contexts to orders 1--4 costs 0.3--3.9\,\% and more than doubles speed (1.18 versus 0.53\,MB/s); a single order-2 context costs 3.2--24.5\,\% but runs nearly four times faster. Orders 8 and 12 add up to 2.4\,\%. Table size matters: $2^{16}$ slots costs 6.1--10.5\,\%, while $2^{24}$ slots gains only 0.5--1.0\,\% at four times the memory (512\,MiB) and less than half the speed. DNA is nearly unaffected by every variant (within 0.3\,\%), which shows that byte-oriented contexts do not exploit its four-letter structure; a model built for that alphabet would likely do better, but we did not test one.
 
 \begin{table}[!t]
 \caption{Simulated speedup over LRU without prefetching (SATA SSD model, 3 seeds, median).}

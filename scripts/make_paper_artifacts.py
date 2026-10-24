@@ -245,20 +245,21 @@ if os.path.exists(abl_path):
         r["compress_MBps"] = float(r["compress_MBps"])
     abby = {(r["file"], r["variant"]): r for r in ab}
     variants = list(dict.fromkeys(r["variant"] for r in ab))
-    afiles = [f for f in ["source_code", "prose_docs", "system_log", "json_metadata", "executable_elf", "dna_bacterial"]
-              if (f, "full") in abby]
-    lines = [r"\begin{tabular}{@{}l" + "r" * (len(afiles) + 1) + r"@{}}", r"\toprule",
-             "Variant & " + " & ".join(LABEL[f] for f in afiles) + r" & MB/s \\", r"\midrule"]
+    text_files = [f for f in ["source_code", "prose_docs", "system_log", "json_metadata", "executable_elf"]
+                  if (f, "full") in abby]
+    lines = [r"\begin{tabular}{@{}lrrrr@{}}", r"\toprule",
+             r"Variant & mean $\Delta$ & range & DNA $\Delta$ & MB/s \\", r"\midrule"]
     for v in variants:
-        cells = []
-        for f in afiles:
-            base = abby[(f, "full")]["bpb"]
-            val = abby[(f, v)]["bpb"]
-            cells.append(f"{val:.3f}" if v == "full" else f"{val:.3f} ({spct((val - base) / base * 100)})")
-        sp = median(abby[(f, v)]["compress_MBps"] for f in afiles)
-        lines.append(f"{vtex(v)} & " + " & ".join(cells) + f" & {mbps(sp)} \\\\")
         if v == "full":
+            sp = median(abby[(f, v)]["compress_MBps"] for f in text_files)
+            lines.append(f"full model & -- & -- & -- & {mbps(sp)} \\\\")
             lines.append(r"\midrule")
+            continue
+        deltas = [(abby[(f, v)]["bpb"] - abby[(f, "full")]["bpb"]) / abby[(f, "full")]["bpb"] * 100 for f in text_files]
+        dna = (abby[("dna_bacterial", v)]["bpb"] - abby[("dna_bacterial", "full")]["bpb"]) / abby[("dna_bacterial", "full")]["bpb"] * 100
+        sp = median(abby[(f, v)]["compress_MBps"] for f in text_files)
+        lo, hi = min(deltas), max(deltas)
+        lines.append(f"{vtex(v)} & {spct(sum(deltas) / len(deltas))} & {spct(lo)} to {spct(hi)} & {spct(dna)} & {mbps(sp)} \\\\")
     lines += [r"\bottomrule", r"\end{tabular}"]
     write("tab_ablation.tex", "\n".join(lines) + "\n")
 
