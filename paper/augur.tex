@@ -22,9 +22,7 @@
 \title{Augur: Measuring When Predicting Data Makes It Faster to Move}
 
 \author{\IEEEauthorblockN{Peter Hansen}
-\IEEEauthorblockA{Independent researcher\\
-Jakarta, Indonesia\\
-peterhansen6002@gmail.com}}
+\IEEEauthorblockA{peterhansen6002@gmail.com}}
 
 \maketitle
 
@@ -91,7 +89,7 @@ The testbed has five modules: a byte-bounded cache (LRU or LFU, never exceeding 
 
 \emph{Exactness.} All arithmetic is integer: probabilities are 12-bit, the logistic and its inverse are table lookups built from integers, and the mixer uses fixed-point weights. No floating point is used anywhere, so encoder and decoder compute identical probabilities on any machine, which a model shared between two computers requires and which floating-point neural models do not give by default. The container is one mode byte followed by either the model stream (an 8-byte length and the coded body) or the raw input. If the model stream is not smaller than the input, the encoder stores the input raw. This fallback is needed: on 50\,000 random bytes the bare model stream (small tables, in a unit test) was 3.5\,\% larger than the input, because high-order contexts learn noise. A decoder never reads past its input or writes past its declared output, and corrupt streams yield wrong bytes or an error, not a crash (tested by bit-flip fuzzing).
 
-\emph{Tuning.} The mixer learning rate and counter limit were chosen by grid search on a separate tuning set of different files (stated in Section~\ref{sec:setup}), never on the test files. The chosen values changed mean bits per byte by under 1\,\% from the next best, so the result is not sensitive to them.
+\emph{Tuning.} The mixer learning rate and counter limit were chosen by grid search on a separate tuning set of different files (stated in Section~\ref{sec:setup}), never on the test files. The chosen values changed mean bits per byte by under 1\,\% from the next best, so the result is not sensitive to them; however, the best counter limit (30) was the smallest value tried, so a slightly better setting may exist.
 
 \subsection{When does coding win on the wire?}\label{sec:model}
 Let $S$ be the file size, $B$ the bandwidth in bytes per second, $r$ the compression ratio, and $V_c$, $V_d$ the codec's compress and decompress throughput in bytes of original data per second. Sending raw takes $S/B$. We consider three cases. In the \emph{static} case the sender compressed the file in advance, so only the transfer and decompression are on the clock: $T=rS/B+S/V_d$. In the \emph{sequential} case compression, transfer and decompression run one after another. In the \emph{pipelined} case chunked streaming overlaps all three, an optimistic idealization where the slowest stage sets the time. Coding is faster than raw exactly when
