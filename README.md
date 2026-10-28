@@ -24,7 +24,7 @@ Full tables: [`results/content/compression.md`](results/content/compression.md),
 
 ```bash
 pip install -e ".[dev,bench]"    # pytest, zstandard, brotli; the codec needs a C compiler (cc)
-pytest                           # 98 tests
+pytest                           # 109 tests
 
 # Content domain: build the corpus, then compare codecs
 python scripts/build_corpus.py --out data
@@ -36,6 +36,10 @@ python -m augur.storage.bench --device sata_ssd --seeds 3 --out results
 
 # Real drive: check that cold reads can be forced before trusting any I/O result
 python scripts/device_baseline.py --dir /path/on/your/drive --size-mib 1024
+
+# Real drive: replay the workloads with real reads (cold cache every run)
+python -m augur.storage.realbench --dir /path/on/your/drive --label mypc --repeats 1   # quick first look
+python -m augur.storage.realbench --dir /path/on/your/drive --label mypc               # 3 repeats (about an hour on a hard disk)
 
 # Regenerate the paper's tables and figures from the results, then build it
 pip install -e ".[paper]" && python scripts/make_paper_artifacts.py
@@ -58,7 +62,7 @@ results/     measured and simulated results
 
 ## Read this before trusting any number
 
-- The **storage results are simulated.** Device profiles (`hdd`, `sata_ssd`, `nvme`) are nominal assumptions. The simulator ignores the OS page cache and parallel I/O queues.
+- The **simulated storage results** (`results/summary_*.md`) use nominal device profiles (`hdd`, `sata_ssd`, `nvme`) and ignore the OS page cache and parallel I/O queues. The **real-I/O harness** (`augur.storage.realbench`) performs real reads, but the access orders are still synthetic and the kernel page cache is emulated as bounded (see the module docstring). Run it on your own drive; results are not portable.
 - The **content results are measured**, but on one shared virtual machine with files of at most 1 MiB, including machine-local files. The corpus is not committed; `scripts/build_corpus.py` rebuilds it and writes a SHA-256 manifest. Gains on other data may differ.
 - `augur-cm` is a small, unoptimized model in the lpaq family. It was not compared against PAQ8, cmix or NNCP, so nothing here claims to beat the state of the art.
 - The **learned neural predictor** from the original plan has not been built. Only heuristic, Markov and context-mixing predictors are evaluated.
@@ -67,7 +71,7 @@ results/     measured and simulated results
 
 ## Roadmap
 
-Real-I/O harness with cold-cache control and checksum-verified reads; an optimized and chunk-parallel codec; a small neural byte predictor with inference cost reported separately; a network study of server-side prediction with client budget hints; a real image-dataset loading workload.
+An optimized and chunk-parallel codec; a small neural byte predictor with inference cost reported separately; a network study of server-side prediction with client budget hints; a real image-dataset loading workload.
 
 ## Licence note
 
