@@ -1,0 +1,16 @@
+\begin{tabular}{@{}llrrrrrr@{}}
+\toprule
+Workload & config & hit & acc. & wasted & read & P99 & time \\
+ & & (\%) & (\%) & (MiB) & (MiB) & (ms) & (s) \\
+\midrule
+recurring routines & lru & 1 & -- & 0.0 & 766 & 35.4 & 59.8 \\
+ & markov2 & 34 & 57 & 190.6 & 981 & 53.6 & 63.2 \\
+ & markov2+gate & 23 & 77 & 49.8 & 820 & 41.4 & 61.6 \\
+ & oracle & 100 & 100 & 0.0 & 792 & 51.6 & 46.3 \\
+\midrule
+DL, fixed order & lru & 0 & -- & 0.0 & 691 & 40.1 & 53.2 \\
+ & markov2 & 33 & 100 & 0.3 & 691 & 41.3 & 52.1 \\
+ & markov2+gate & 33 & 100 & 0.3 & 691 & 40.7 & 51.7 \\
+ & oracle & 100 & 100 & 0.0 & 700 & 50.5 & 44.0 \\
+\bottomrule
+\end{tabular}

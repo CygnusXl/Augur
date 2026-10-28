@@ -44,31 +44,49 @@ def load(path: str):
     return data
 
 
+def cells(data):
+    """Per workload and configuration: times, undisturbed times, and the workloads in order."""
+    workloads = list(dict.fromkeys(w for w, _ in data))
+    out = {}
+    for w in workloads:
+        group = {c: t for (ww, c), t in data.items() if ww == w}
+        for c, t in group.items():
+            lo = min(t.values())
+            out[(w, c)] = (t, {rep: s for rep, s in t.items() if s <= DISTURBED * lo})
+    return workloads, out
+
+
+def speedups(data, baseline: str):
+    """{(workload, config): dict(speedup, wins, pairs, disturbed, clean_median, times)}."""
+    workloads, grid = cells(data)
+    res = {}
+    for (w, c), (t, clean) in grid.items():
+        base = grid.get((w, baseline), ({}, {}))[1]
+        pairs = [base[r] / clean[r] for r in clean if r in base]
+        res[(w, c)] = dict(
+            speedup=None if c == baseline or not pairs else median(pairs),
+            wins=sum(p > 1 for p in pairs), pairs=len(pairs), disturbed=len(t) - len(clean),
+            clean_median=median(clean.values()), times=t, clean=set(clean),
+        )
+    return res
+
+
 def analyse(data, baseline: str):
+    res = speedups(data, baseline)
     workloads = list(dict.fromkeys(w for w, _ in data))
     out = []
     for w in workloads:
-        cells = {c: t for (ww, c), t in data.items() if ww == w}
-        clean = {}
-        for c, t in cells.items():
-            lo = min(t.values())
-            clean[c] = {rep: s for rep, s in t.items() if s <= DISTURBED * lo}
         out += ["", f"## {w}", "",
                 f"Paired against `{baseline}`, repeat by repeat. `speedup` = baseline time / config time over repeats where both ran undisturbed.",
                 "", "| config | times (s) | disturbed runs | median of clean runs (s) | speedup vs " + baseline + " | faster in |",
                 "| --- | --- | ---: | ---: | ---: | ---: |"]
-        base = clean.get(baseline, {})
-        for c, t in cells.items():
-            times = ", ".join(f"{t[r]:.1f}" + ("*" if r not in clean[c] else "") for r in sorted(t))
-            bad = len(t) - len(clean[c])
-            med = median(clean[c].values())
-            pairs = [base[r] / clean[c][r] for r in clean[c] if r in base]
-            if c == baseline or not pairs:
-                sp, wins = "-", "-"
-            else:
-                sp = f"{median(pairs):.2f}x"
-                wins = f"{sum(p > 1 for p in pairs)} of {len(pairs)}"
-            out.append(f"| {c} | {times} | {bad} | {med:.2f} | {sp} | {wins} |")
+        for (ww, c), r in res.items():
+            if ww != w:
+                continue
+            times = ", ".join(f"{r['times'][k]:.1f}" + ("*" if k not in r["clean"] else "") for k in sorted(r["times"]))
+            sp = "-" if r["speedup"] is None else f"{r['speedup']:.2f}x"
+            wins = "-" if r["speedup"] is None else f"{r['wins']} of {r['pairs']}"
+            out.append(f"| {c} | {times} | {r['disturbed']} | {r['clean_median']:.2f} | {sp} | {wins} |")
     return "\n".join(out)
 
 

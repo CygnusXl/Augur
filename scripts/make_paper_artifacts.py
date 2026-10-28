@@ -287,5 +287,107 @@ def storage_table():
 
 
 storage_table()
+
+
+# ---------------------------------------------------------------- Real-I/O tables and macros
+def real_io() -> None:
+    import importlib.util
+    import re
+
+    run_dir = os.path.join(RES, "real", "final-default-design")
+    log, summ = os.path.join(run_dir, "console_log.txt"), os.path.join(run_dir, "summary.md")
+    if not (os.path.exists(log) and os.path.exists(summ)):
+        return
+    spec = importlib.util.spec_from_file_location("analyze_real", os.path.join(ROOT, "scripts", "analyze_real.py"))
+    ar = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(ar)
+    res = ar.speedups(ar.load(log), "lru")
+
+    names = {"recurring_routines": "recurring routines", "dl_fixed_order": "DL, fixed order",
+             "dl_reshuffled": "DL, reshuffled", "sequential": "sequential", "random": "random"}
+    cfgs = ["os-default", "os-noreadahead", "sequential", "markov2", "markov2+gate", "oracle"]
+    short_real = {"os-default": "OS", "os-noreadahead": "OS, no RA", "sequential": "seq.", "markov2": "markov2",
+                  "markov2+gate": "+gate", "oracle": "oracle"}
+    lines = [r"\begin{tabular}{@{}l" + "r" * len(cfgs) + r"@{}}", r"\toprule",
+             "Workload & " + " & ".join(short_real[c] for c in cfgs) + r" \\", r"\midrule"]
+    for w in names:
+        cells = []
+        for c in cfgs:
+            r = res[(w, c)]
+            cells.append(f"{r['speedup']:.2f}" + (r"$^\ast$" if r["pairs"] < 3 else ""))
+        lines.append(f"{names[w]} & " + " & ".join(cells) + r" \\")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    write("tab_real_speedup.tex", "\n".join(lines) + "\n")
+
+    # per-configuration details from the run's own summary table
+    sections, cur = {}, None
+    for line in open(summ):
+        if line.startswith("## "):
+            cur = line[3:].strip()
+            sections[cur] = {}
+        elif cur and line.startswith("| ") and not line.startswith("| config") and not line.startswith("| ---"):
+            cells = [x.strip() for x in line.strip().strip("|").split("|")]
+            sections[cur][cells[0]] = cells
+
+    def num(x):
+        return float(x.rstrip("%x")) if x not in ("-", "") else float("nan")
+
+    det_cfgs = ["lru", "markov2", "markov2+gate", "oracle"]
+    lines = [r"\begin{tabular}{@{}llrrrrrr@{}}", r"\toprule",
+             r"Workload & config & hit & acc. & wasted & read & P99 & time \\",
+             r" & & (\%) & (\%) & (MiB) & (MiB) & (ms) & (s) \\", r"\midrule"]
+    for wi, w in enumerate(["recurring_routines", "dl_fixed_order"]):
+        for ci, c in enumerate(det_cfgs):
+            row = sections[w][c]
+            hit, acc, wasted, dev, p99 = num(row[4]), num(row[5]), num(row[6]), num(row[7]), num(row[3])
+            t = res[(w, c)]["clean_median"]
+            fmt = lambda v, d=0: "--" if v != v else f"{v:.{d}f}"
+            lines.append(f"{names[w] if ci == 0 else ''} & {tex(c)} & {fmt(hit)} & {fmt(acc)} & {fmt(wasted, 1)} & "
+                         f"{fmt(dev)} & {fmt(p99 / 1000, 1)} & {t:.1f} \\\\")
+        if wi == 0:
+            lines.append(r"\midrule")
+    lines += [r"\bottomrule", r"\end{tabular}"]
+    write("tab_real_detail.tex", "\n".join(lines) + "\n")
+
+    # macros, so that prose numbers come from the data
+    text = open(log).read()
+    cold = [int(x) for x in re.findall(r"cold (\d+) us", text)]
+    warm = [int(x) for x in re.findall(r"warm (\d+) us", text)]
+    ratio = [float(x) for x in re.findall(r"ratio ([\d.]+)x", text)]
+    n_runs = sum(len(r["times"]) for r in res.values())
+    n_bad = sum(r["disturbed"] for r in res.values())
+    cpu = [num(r[8]) for sec in sections.values() for r in sec.values()]
+    rss = [num(r[9]) for sec in sections.values() for r in sec.values()]
+    pred = [num(r[10]) for sec in sections.values() for r in sec.values()]
+    rr_lru, rr_mk = num(sections["recurring_routines"]["lru"][7]), num(sections["recurring_routines"]["markov2"][7])
+    non_seq = [res[(w, "oracle")]["speedup"] for w in names if w != "sequential"]
+    noreadahead = [res[(w, "os-noreadahead")]["speedup"] for w in ("dl_fixed_order", "dl_reshuffled", "sequential")]
+    hdd = load(os.path.join(RES, "runs_hdd.csv"))
+    sim = lambda w, c: median(float(r["speedup_vs_lru"]) for r in hdd if r["workload"] == w and r["config"] == c)
+    macros = {
+        "realColdMsLo": f"{min(cold) / 1000:.1f}", "realColdMsHi": f"{max(cold) / 1000:.1f}",
+        "realWarmUsLo": f"{min(warm)}", "realWarmUsHi": f"{max(warm)}",
+        "realRatioLo": f"{min(ratio):.0f}", "realRatioHi": f"{max(ratio):.0f}",
+        "realRuns": f"{n_runs}", "realDisturbed": f"{n_bad}",
+        "realCpuMax": f"{max(cpu):.0f}", "realRssMax": f"{max(rss):.0f}", "realPredMsMax": f"{max(p for p in pred if p == p):.0f}",
+        "realExtraReadPct": f"{(rr_mk / rr_lru - 1) * 100:.0f}",
+        "realOracleLo": f"{min(non_seq):.2f}", "realOracleHi": f"{max(non_seq):.2f}",
+        "realNoRaLo": f"{min(noreadahead):.2f}", "realNoRaHi": f"{max(noreadahead):.2f}",
+        "realMarkovRoutines": f"{res[('recurring_routines', 'markov2')]['speedup']:.2f}",
+        "realGateRoutines": f"{res[('recurring_routines', 'markov2+gate')]['speedup']:.2f}",
+        "realMarkovFixed": f"{res[('dl_fixed_order', 'markov2')]['speedup']:.2f}",
+        "realGateFixed": f"{res[('dl_fixed_order', 'markov2+gate')]['speedup']:.2f}",
+        "simHddMarkovRoutines": f"{sim('recurring_routines', 'markov2'):.2f}",
+        "simHddOracleRoutines": f"{sim('recurring_routines', 'oracle'):.2f}",
+        "simHddSequential": f"{sim('sequential', 'sequential'):.2f}",
+        "realOracleRoutines": f"{res[('recurring_routines', 'oracle')]['speedup']:.2f}",
+        "realSeqSeq": f"{res[('sequential', 'sequential')]['speedup']:.2f}",
+        "realPredPctMax": f"{max(num(sections[w][c][10]) / (res[(w, c)]['clean_median'] * 1000) * 100 for w in sections for c in sections[w] if num(sections[w][c][10]) > 0):.1f}",
+    }
+    write("real_macros.tex", "".join(f"\\newcommand{{\\{k}}}{{{v}}}\n" for k, v in macros.items()))
+    print("real macros:", macros)
+
+
+real_io()
 print("wrote", sorted(os.listdir(GEN)), sorted(os.listdir(FIG)))
 print({LABEL[f]: round(g, 1) for f, g in gains.items() if f in compressible})

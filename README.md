@@ -17,6 +17,7 @@ Measured on one machine (2 virtual CPUs); speeds are relative, sizes are exact. 
 - **Prediction makes data smaller.** `augur-cm`, a small exact context-mixing codec, produced the smallest output on 6 of 7 compressible real files: 6.8–31.5 % smaller than the best of gzip, bzip2, xz, zstd and brotli. On one executable xz was 5.2 % smaller. Random and already-compressed data cannot be shrunk; the codec stores them raw at a cost of one byte.
 - **It does not (yet) make transfer faster.** `augur-cm` decodes at about 0.5 MB/s, over a thousand times slower than zstd. It is the fastest option on a link only below roughly 0.04–0.11 Mbit/s, and would need 16–53× faster decoding to win at 2 Mbit/s.
 - **Simulated prefetching helps only where history repeats** (1.08–1.10× for the default Markov predictor on recurring access; none on random or reshuffled access), and trusting single observations can slow a workload to 0.36×. These storage results are simulated with nominal device parameters, not measured on a real drive.
+- **Real reads on a hard disk agree that access prediction barely pays.** With a cold cache at every run, a learned Markov predictor gained at most 1.02-1.03x where the access order repeats exactly and ran at 0.94x on noisy recurring routines (28 % more data read), while a perfect predictor would reach 1.21-1.31x on the non-sequential workloads. Kernel readahead already handles sequential access. See `results/real/README.md` and `results/real/final-default-design/analysis.md`; one machine, synthetic access orders, three repeats.
 
 Full tables: [`results/content/compression.md`](results/content/compression.md), [`ablation.md`](results/content/ablation.md), [`breakeven.md`](results/content/breakeven.md), and the storage summaries in `results/`.
 
@@ -24,7 +25,7 @@ Full tables: [`results/content/compression.md`](results/content/compression.md),
 
 ```bash
 pip install -e ".[dev,bench]"    # pytest, zstandard, brotli; the codec needs a C compiler (cc)
-pytest                           # 109 tests
+pytest                           # 112 tests
 
 # Content domain: build the corpus, then compare codecs
 python scripts/build_corpus.py --out data

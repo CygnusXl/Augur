@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "augur"
-version = "0.2.0"
+version = "0.3.0"
 description = "Does predicting data make it faster to store and move? A measured study of predictive prefetching and exact predictive coding."
 readme = "README.md"
 requires-python = ">=3.10"
