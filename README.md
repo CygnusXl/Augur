@@ -10,6 +10,8 @@ It studies two kinds of prediction under one framework: predicting *which item i
 
 **Paper:** [`paper/augur.pdf`](paper/augur.pdf) (IEEE conference format; LaTeX source in `paper/`).
 
+**Cite:** Hansen, P. *Augur: Measuring When Predicting Data Makes It Faster to Move* (preprint, version paper-v1). Zenodo, 2026. [doi:10.5281/zenodo.23729831](https://doi.org/10.5281/zenodo.23729831)
+
 ## What the measurements say so far
 
 Measured on one machine (2 virtual CPUs); speeds are relative, sizes are exact. Every output was decoded and checked byte for byte.

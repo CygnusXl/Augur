@@ -24,3 +24,15 @@ keywords:
   - learned caching
   - data transfer
   - benchmarking
+preferred-citation:
+  type: report
+  title: "Augur: Measuring When Predicting Data Makes It Faster to Move"
+  authors:
+    - family-names: Hansen
+      given-names: Peter
+  year: 2026
+  month: 10
+  doi: "10.5281/zenodo.23729831"
+  publisher:
+    name: Zenodo
+  notes: "Preprint, not peer reviewed."
