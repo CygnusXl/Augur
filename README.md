@@ -74,6 +74,8 @@ results/     measured and simulated results
 
 An optimized and chunk-parallel codec; a small neural byte predictor with inference cost reported separately; a network study of server-side prediction with client budget hints; a real image-dataset loading workload.
 
-## Licence note
+## Licence
 
-`paper/IEEEtran.cls` and `paper/IEEEtran.bst` are the unmodified IEEE LaTeX class and style (LPPL).
+The code in this repository is released under the [MIT License](LICENSE). The paper text and figures in `paper/` are not covered by it; all rights are reserved by the author unless a separate licence is stated when the paper is posted.
+
+`paper/IEEEtran.cls` and `paper/IEEEtran.bst` are the unmodified IEEE LaTeX class and style (LPPL), not part of this project's code.

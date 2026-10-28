@@ -7,6 +7,8 @@ name = "augur"
 version = "0.3.0"
 description = "Does predicting data make it faster to store and move? A measured study of predictive prefetching and exact predictive coding."
 readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Peter Hansen" }]
 requires-python = ">=3.10"
 dependencies = []
 
