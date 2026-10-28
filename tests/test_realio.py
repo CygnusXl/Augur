@@ -118,7 +118,7 @@ def test_fs_type_known_for_tmp(tmp_path):
 
 
 def test_lazy_drop_matches_accounting(df):
-    t, eager = run(df, predictor=MarkovPredictor(2))
+    t, eager = run(df, predictor=MarkovPredictor(2), drop="immediate")
     _, lazy = run(df, predictor=MarkovPredictor(2), drop="on_evict")
     # same cache logic; prefetch completion timing can shift a few entries, so allow a small margin
     assert abs(lazy["demand_misses"] - eager["demand_misses"]) <= 0.1 * len(t)
@@ -128,5 +128,6 @@ def test_lazy_drop_matches_accounting(df):
 def test_lazy_variants_registered():
     from augur.storage.realbench import REAL_CONFIGS
 
-    assert REAL_CONFIGS["lru-lazy"].drop == "on_evict"
-    assert REAL_CONFIGS["lru"].drop == "immediate"
+    assert REAL_CONFIGS["lru"].drop == "on_evict"
+    assert REAL_CONFIGS["lru-eager"].drop == "immediate"
+    assert REAL_CONFIGS["markov2-eager"].drop == "immediate"

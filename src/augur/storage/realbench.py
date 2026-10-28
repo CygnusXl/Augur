@@ -16,9 +16,11 @@ Configurations
     markov1/markov2  LRU + learned-from-history prefetch
     markov2+gate     markov2 that backs off when prefetches are wasted
     oracle           clairvoyant upper bound (knows the future from the trace)
-    <name>-lazy      any application-cache configuration above, but the kernel keeps an item's
-                     pages until the application cache evicts it (instead of dropping them right
-                     after the read). Used to check whether the immediate drop disturbs kernel readahead.
+    <name>-eager     any application-cache configuration above, but the kernel is told to forget an
+                     item's pages right after the read. Peter's first runs used this; it turned out
+                     to slow the application configurations by up to 20% on image-sized items versus
+                     the OS-only baseline (see results/real/README.md), so the default now keeps the
+                     kernel's copy until the application cache evicts the item.
 
 The access orders are still synthetic (see traces.py); the reads, the cache
 state, the CPU and memory costs are real. Results are specific to your
@@ -64,7 +66,7 @@ class RealSpec:
     policy: str = "lru"
     adaptive: bool = False
     readahead: bool = True
-    drop: str = "immediate"
+    drop: str = "on_evict"
 
 
 def _specs() -> Dict[str, RealSpec]:
@@ -73,13 +75,16 @@ def _specs() -> Dict[str, RealSpec]:
         "os-noreadahead": RealSpec("os-noreadahead", lambda t: NoPredictor(), mode="os", readahead=False),
     }
     for name, s in SIM_CONFIGS.items():
-        specs[name] = RealSpec(name, s.make_predictor, "app", s.policy, s.adaptive)
-        specs[name + "-lazy"] = RealSpec(name + "-lazy", s.make_predictor, "app", s.policy, s.adaptive, drop="on_evict")
+        # Default: the kernel keeps an item's pages exactly as long as the application cache does.
+        specs[name] = RealSpec(name, s.make_predictor, "app", s.policy, s.adaptive, drop="on_evict")
+        # Earlier design, kept for comparison: forget the pages right after the read.
+        specs[name + "-eager"] = RealSpec(name + "-eager", s.make_predictor, "app", s.policy, s.adaptive,
+                                          drop="immediate")
     return specs
 
 
 REAL_CONFIGS = _specs()
-DEFAULT_CONFIGS = ["os-default", "os-noreadahead", "lru", "sequential", "markov2", "oracle"]
+DEFAULT_CONFIGS = ["os-default", "os-noreadahead", "lru", "sequential", "markov2", "markov2+gate", "oracle"]
 DEFAULT_WORKLOADS = ["recurring_routines", "dl_fixed_order", "dl_reshuffled", "sequential", "random"]
 NUMERIC = [
     "mean_us", "median_us", "p95_us", "p99_us", "hit_rate", "late_hit_rate", "demand_misses",

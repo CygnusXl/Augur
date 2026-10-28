@@ -11,11 +11,14 @@ Design choices that matter for honesty:
   calibrates cold versus warm reads first and warns if the gap is not real.
 * The kernel page cache would otherwise hold the whole (small) file after one
   pass, which hides the effect we want to measure. To emulate a dataset larger
-  than RAM, each item is evicted from the page cache as soon as the application
-  has it (application-cache configurations), or when it falls out of an LRU
-  ledger of ``cache_bytes`` (OS-only configurations). Kernel readahead stays
-  enabled unless a configuration turns it off. The ledger is an approximation:
-  pages the kernel reads ahead outside any item stay cached until read.
+  than RAM, an item is evicted from the page cache when it falls out of the
+  application cache (application-cache configurations) or out of an LRU ledger
+  of ``cache_bytes`` (OS-only configurations), so both hold about the same
+  bytes. Kernel readahead stays enabled unless a configuration turns it off.
+  The ledger is an approximation: pages the kernel reads ahead outside any item
+  stay cached until read. (Dropping each item right after the read, the first
+  design, measurably slowed the application configurations; it remains
+  available as the ``-eager`` configurations.)
 * Application-cache and prefetch bookkeeping stays on the main thread. Worker
   threads only call ``pread``, so the cache needs no locks.
 * Each item begins with its id, checked on every read, so a wrong offset or a
@@ -221,10 +224,10 @@ class RealConfig:
     workers: int = 4
     readahead: bool = True
     mode: str = "app"  # "app": application cache + optional prefetch; "os": no app cache
-    # When the kernel is told to forget an item's pages: "immediate" = right after the application
-    # has read it; "on_evict" = when the application cache evicts it (so the kernel and the
-    # application hold the same items, and kernel readahead is left undisturbed in between).
-    drop: str = "immediate"
+    # When the kernel is told to forget an item's pages: "on_evict" (default) = when the application
+    # cache evicts it, so kernel and application hold the same items and readahead is undisturbed;
+    # "immediate" = right after the application has read it (slower on this harness; see README).
+    drop: str = "on_evict"
 
 
 def _pct(sorted_lat: List[float], p: float) -> float:
