@@ -1,0 +1,194 @@
+(.venv) peter@Cygnus:~/Cynthia/indonesian-handwriting-recognition/transcription-extension/Augur$ python -m augur.storage.realbench --dir "$HOME" --label peter-pc-final
+Machine: {'platform': 'Linux-7.0.0-38-generic-x86_64-with-glibc2.43', 'cpu': 'x86_64', 'cpus': 16, 'ram_gib': 61.3, 'python': '3.14.4', 'filesystem': 'ext4', 'drive': 'rotational (HDD)'}
+
+[recurring_routines] writing 125 MiB ...
+[recurring_routines] cold/warm random read ratio 620.2x (cold 8516 us, warm 14 us)
+  rep 0 sequential         63.39 s   p99     46512 us   device read    766.1 MiB
+  rep 0 oracle             46.29 s   p99     51626 us   device read    796.0 MiB
+  rep 0 markov2+gate       62.91 s   p99     43602 us   device read    820.5 MiB
+  rep 0 lru                61.07 s   p99     38407 us   device read    765.6 MiB
+  rep 0 os-default         63.65 s   p99     48117 us   device read    765.6 MiB
+  rep 0 markov2            65.01 s   p99     55529 us   device read    991.1 MiB
+  rep 0 os-noreadahead     62.79 s   p99     30570 us   device read    744.4 MiB
+  rep 1 os-noreadahead     64.84 s   p99     37000 us   device read    744.4 MiB
+  rep 1 lru                59.76 s   p99     35417 us   device read    765.6 MiB
+  rep 1 os-default         59.43 s   p99     34942 us   device read    765.6 MiB
+  rep 1 markov2            62.82 s   p99     53350 us   device read    980.2 MiB
+  rep 1 markov2+gate       61.49 s   p99     41420 us   device read    820.5 MiB
+  rep 1 sequential         61.02 s   p99     38355 us   device read    766.1 MiB
+  rep 1 oracle             46.36 s   p99     50639 us   device read    791.6 MiB
+  rep 2 os-noreadahead     63.73 s   p99     34488 us   device read    744.4 MiB
+  rep 2 markov2+gate       61.60 s   p99     38496 us   device read    818.5 MiB
+  rep 2 lru                59.47 s   p99     35067 us   device read    765.6 MiB
+  rep 2 markov2            63.22 s   p99     53583 us   device read    981.0 MiB
+  rep 2 oracle            122.19 s   p99    161834 us   device read    753.6 MiB
+  rep 2 os-default        195.69 s   p99    107772 us   device read    765.6 MiB
+  rep 2 sequential        199.42 s   p99    106249 us   device read    766.1 MiB
+
+[dl_fixed_order] writing 213 MiB ...
+[dl_fixed_order] cold/warm random read ratio 855.6x (cold 10886 us, warm 13 us)
+  rep 0 sequential        163.25 s   p99    108196 us   device read    690.3 MiB
+  rep 0 oracle             81.09 s   p99     90559 us   device read    704.6 MiB
+  rep 0 markov2+gate      156.03 s   p99    107993 us   device read    691.2 MiB
+  rep 0 lru                93.36 s   p99     84953 us   device read    690.9 MiB
+  rep 0 os-default         54.83 s   p99     42208 us   device read    690.9 MiB
+  rep 0 markov2            52.06 s   p99     41280 us   device read    691.2 MiB
+  rep 0 os-noreadahead     64.62 s   p99     28167 us   device read    623.5 MiB
+  rep 1 os-noreadahead     65.65 s   p99     32567 us   device read    623.5 MiB
+  rep 1 lru                53.02 s   p99     39360 us   device read    690.9 MiB
+  rep 1 os-default         52.62 s   p99     35901 us   device read    690.9 MiB
+  rep 1 markov2            51.91 s   p99     39993 us   device read    691.2 MiB
+  rep 1 markov2+gate       51.62 s   p99     40586 us   device read    691.2 MiB
+  rep 1 sequential         52.22 s   p99     36918 us   device read    690.3 MiB
+  rep 1 oracle             43.67 s   p99     50298 us   device read    692.1 MiB
+  rep 2 os-noreadahead     66.00 s   p99     32906 us   device read    623.5 MiB
+  rep 2 markov2+gate       51.84 s   p99     40719 us   device read    691.2 MiB
+  rep 2 lru                53.37 s   p99     40053 us   device read    690.9 MiB
+  rep 2 markov2            52.64 s   p99     43406 us   device read    691.2 MiB
+  rep 2 oracle             44.38 s   p99     50459 us   device read    700.3 MiB
+  rep 2 os-default         55.15 s   p99     43280 us   device read    690.9 MiB
+  rep 2 sequential         53.54 s   p99     38268 us   device read    690.3 MiB
+
+[dl_reshuffled] writing 213 MiB ...
+[dl_reshuffled] cold/warm random read ratio 983.1x (cold 10825 us, warm 11 us)
+  rep 0 sequential         51.73 s   p99     35498 us   device read    708.1 MiB
+  rep 0 oracle             43.85 s   p99     50870 us   device read    701.3 MiB
+  rep 0 markov2+gate       52.28 s   p99     36962 us   device read    708.3 MiB
+  rep 0 lru                53.22 s   p99     38505 us   device read    708.3 MiB
+  rep 0 os-default         51.81 s   p99     34865 us   device read    708.3 MiB
+  rep 0 markov2            52.30 s   p99     37996 us   device read    708.3 MiB
+  rep 0 os-noreadahead     62.95 s   p99     24736 us   device read    623.1 MiB
+  rep 1 os-noreadahead     63.24 s   p99     28197 us   device read    623.1 MiB
+  rep 1 lru                52.15 s   p99     36708 us   device read    708.3 MiB
+  rep 1 os-default         53.11 s   p99     43148 us   device read    708.3 MiB
+  rep 1 markov2            56.38 s   p99     50796 us   device read    708.3 MiB
+  rep 1 markov2+gate       55.56 s   p99     49080 us   device read    708.3 MiB
+  rep 1 sequential         54.64 s   p99     44794 us   device read    708.1 MiB
+  rep 1 oracle             46.07 s   p99     53128 us   device read    700.4 MiB
+  rep 2 os-noreadahead     66.44 s   p99     41887 us   device read    623.1 MiB
+  rep 2 markov2+gate       52.94 s   p99     41708 us   device read    708.3 MiB
+  rep 2 lru                53.78 s   p99     40917 us   device read    708.3 MiB
+  rep 2 markov2            53.82 s   p99     43301 us   device read    708.3 MiB
+  rep 2 oracle             44.57 s   p99     51860 us   device read    698.9 MiB
+  rep 2 os-default         54.32 s   p99     46645 us   device read    708.3 MiB
+  rep 2 sequential         53.95 s   p99     42151 us   device read    708.1 MiB
+
+[sequential] writing 750 MiB ...
+[sequential] cold/warm random read ratio 850.8x (cold 10154 us, warm 12 us)
+  rep 0 sequential          8.83 s   p99     17291 us   device read    750.0 MiB
+  rep 0 oracle              9.37 s   p99     17475 us   device read    750.0 MiB
+  rep 0 markov2+gate        9.81 s   p99     24327 us   device read    750.0 MiB
+  rep 0 lru                 9.47 s   p99     16758 us   device read    750.0 MiB
+  rep 0 os-default          8.84 s   p99     16822 us   device read    750.0 MiB
+  rep 0 markov2             9.55 s   p99     15717 us   device read    750.0 MiB
+  rep 0 os-noreadahead     11.23 s   p99      1563 us   device read    750.0 MiB
+  rep 1 os-noreadahead     11.42 s   p99      1051 us   device read    750.0 MiB
+  rep 1 lru                 8.72 s   p99     16394 us   device read    750.0 MiB
+  rep 1 os-default          8.87 s   p99     17062 us   device read    750.0 MiB
+  rep 1 markov2            10.05 s   p99     26325 us   device read    750.0 MiB
+  rep 1 markov2+gate        8.48 s   p99     15598 us   device read    750.0 MiB
+  rep 1 sequential          9.84 s   p99     18196 us   device read    750.0 MiB
+  rep 1 oracle              9.76 s   p99     26845 us   device read    750.0 MiB
+  rep 2 os-noreadahead     11.03 s   p99      1203 us   device read    750.0 MiB
+  rep 2 markov2+gate        9.88 s   p99     17250 us   device read    750.0 MiB
+  rep 2 lru                 9.19 s   p99     17183 us   device read    750.0 MiB
+  rep 2 markov2             8.88 s   p99     15165 us   device read    750.0 MiB
+  rep 2 oracle              9.75 s   p99     23204 us   device read    750.0 MiB
+  rep 2 os-default          9.87 s   p99     19402 us   device read    750.0 MiB
+  rep 2 sequential          9.42 s   p99     18086 us   device read    750.0 MiB
+
+[random] writing 750 MiB ...
+[random] cold/warm random read ratio 591.8x (cold 11075 us, warm 19 us)
+  rep 0 sequential         65.74 s   p99     34042 us   device read    734.5 MiB
+  rep 0 oracle             50.52 s   p99     42894 us   device read    727.7 MiB
+  rep 0 markov2+gate       67.17 s   p99     37153 us   device read    728.5 MiB
+  rep 0 lru                66.63 s   p99     36594 us   device read    728.5 MiB
+  rep 0 os-default         66.72 s   p99     34920 us   device read    728.5 MiB
+  rep 0 markov2            68.35 s   p99     39363 us   device read    728.5 MiB
+  rep 0 os-noreadahead     67.04 s   p99     37727 us   device read    724.2 MiB
+  rep 1 os-noreadahead     65.05 s   p99     30841 us   device read    724.2 MiB
+  rep 1 lru                68.54 s   p99     42194 us   device read    728.5 MiB
+  rep 1 os-default         69.37 s   p99     42553 us   device read    728.5 MiB
+  rep 1 markov2            65.24 s   p99     30775 us   device read    728.5 MiB
+  rep 1 markov2+gate       63.59 s   p99     24538 us   device read    728.5 MiB
+  rep 1 sequential         63.45 s   p99     26456 us   device read    734.5 MiB
+  rep 1 oracle             52.42 s   p99     43611 us   device read    727.7 MiB
+  rep 2 os-noreadahead     65.75 s   p99     34542 us   device read    724.2 MiB
+  rep 2 markov2+gate       64.62 s   p99     30042 us   device read    728.5 MiB
+  rep 2 lru                63.29 s   p99     28069 us   device read    728.5 MiB
+  rep 2 markov2            63.68 s   p99     25889 us   device read    728.5 MiB
+  rep 2 oracle             48.87 s   p99     41704 us   device read    727.7 MiB
+  rep 2 os-default         63.65 s   p99     26314 us   device read    728.5 MiB
+  rep 2 sequential         63.58 s   p99     27317 us   device read    734.5 MiB
+# Real-I/O results: peter-pc-final
+
+Machine: Linux-7.0.0-38-generic-x86_64-with-glibc2.43, 16 CPUs, 61.3 GiB RAM, Python 3.14.4. Files on `ext4`, drive reported as **rotational (HDD)**.
+
+3 repeats per cell (median shown; time column also shows min-max), 6000 accesses per workload, application cache = 5% of unique bytes, think time 1000 us, prefetch depth 4, threshold 0.4, 4 prefetch threads. Every run started with the file evicted from the page cache.
+
+Cold/warm calibration (random reads on each data file; a ratio below 1.5 means results are unreliable): recurring_routines 620x, dl_fixed_order 856x, dl_reshuffled 983x, sequential 851x, random 592x.
+
+Access orders are synthetic; reads, caches, CPU and memory are real. `speedup` is end-to-end time versus the named baseline (above 1.0 is faster). `device MiB` is what the kernel actually read from the device (readahead included). `cpu` is process CPU time over wall time. `RSS+` is extra peak resident memory.
+
+## recurring_routines
+
+| config | mean us | p95 us | p99 us | hit | accuracy | wasted MiB | device MiB | cpu | RSS+ MiB | predictor ms | time s (min-max) | vs os-default | vs lru |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| os-default | 9513 | 22481 | 48117 | - | - | 0.0 | 765.6 | 1% | 0.1 | 0.0 | 63.65 (59.43-195.69) | 1.00x | 0.94x |
+| os-noreadahead | 9531 | 14465 | 34488 | - | - | 0.0 | 744.4 | 1% | 0.0 | 0.0 | 63.73 (62.79-64.84) | 1.00x | 0.94x |
+| lru | 8897 | 16147 | 35417 | 1% | - | 0.0 | 765.6 | 1% | 5.8 | 0.0 | 59.76 (59.47-61.07) | 1.07x | 1.00x |
+| sequential | 9482 | 19913 | 46512 | 1% | 0% | 0.5 | 766.1 | 1% | 6.0 | 11.9 | 63.39 (61.02-199.42) | 1.00x | 0.94x |
+| markov2 | 9436 | 27015 | 53583 | 34% | 57% | 190.6 | 981.0 | 2% | 10.7 | 86.4 | 63.22 (62.82-65.01) | 1.01x | 0.95x |
+| markov2+gate | 9177 | 21850 | 41420 | 23% | 77% | 49.8 | 820.5 | 2% | 10.7 | 89.3 | 61.60 (61.49-62.91) | 1.03x | 0.97x |
+| oracle | 6621 | 31061 | 51626 | 100% | 100% | 0.0 | 791.6 | 2% | 6.5 | 33.9 | 46.36 (46.29-122.19) | 1.37x | 1.29x |
+
+## dl_fixed_order
+
+| config | mean us | p95 us | p99 us | hit | accuracy | wasted MiB | device MiB | cpu | RSS+ MiB | predictor ms | time s (min-max) | vs os-default | vs lru |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| os-default | 8011 | 22391 | 42208 | - | - | 0.0 | 690.9 | 2% | 0.0 | 0.0 | 54.83 (52.62-55.15) | 1.00x | 0.97x |
+| os-noreadahead | 9805 | 14605 | 32567 | - | - | 0.0 | 623.5 | 2% | 0.0 | 0.0 | 65.65 (64.62-66.00) | 0.84x | 0.81x |
+| lru | 7790 | 19689 | 40053 | 0% | - | 0.0 | 690.9 | 2% | 11.0 | 0.0 | 53.37 (53.02-93.36) | 1.03x | 1.00x |
+| sequential | 7806 | 19883 | 38268 | 0% | 0% | 1.3 | 690.3 | 2% | 11.0 | 9.7 | 53.54 (52.22-163.25) | 1.02x | 1.00x |
+| markov2 | 7529 | 19680 | 41280 | 33% | 100% | 0.3 | 691.2 | 3% | 20.5 | 90.3 | 52.06 (51.91-52.64) | 1.05x | 1.03x |
+| markov2+gate | 7491 | 19380 | 40719 | 33% | 100% | 0.3 | 691.2 | 2% | 19.4 | 90.6 | 51.84 (51.62-156.03) | 1.06x | 1.03x |
+| oracle | 6239 | 30632 | 50459 | 100% | 100% | 0.0 | 700.3 | 3% | 13.0 | 43.8 | 44.38 (43.67-81.09) | 1.24x | 1.20x |
+
+## dl_reshuffled
+
+| config | mean us | p95 us | p99 us | hit | accuracy | wasted MiB | device MiB | cpu | RSS+ MiB | predictor ms | time s (min-max) | vs os-default | vs lru |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| os-default | 7763 | 20695 | 43148 | - | - | 0.0 | 708.3 | 1% | 0.0 | 0.0 | 53.11 (51.81-54.32) | 1.00x | 1.00x |
+| os-noreadahead | 9402 | 14318 | 28197 | - | - | 0.0 | 623.1 | 2% | 0.0 | 0.0 | 63.24 (62.95-66.44) | 0.84x | 0.84x |
+| lru | 7762 | 21213 | 38505 | 0% | - | 0.0 | 708.3 | 2% | 11.2 | 0.0 | 53.22 (52.15-53.78) | 1.00x | 1.00x |
+| sequential | 7912 | 21798 | 42151 | 0% | 0% | 0.4 | 708.1 | 2% | 11.2 | 9.6 | 53.95 (51.73-54.64) | 0.98x | 0.99x |
+| markov2 | 7874 | 22017 | 43301 | 0% | - | 0.0 | 708.3 | 2% | 12.1 | 116.7 | 53.82 (52.30-56.38) | 0.99x | 0.99x |
+| markov2+gate | 7734 | 21876 | 41708 | 0% | - | 0.0 | 708.3 | 2% | 11.8 | 94.6 | 52.94 (52.28-55.56) | 1.00x | 1.01x |
+| oracle | 6289 | 30357 | 51860 | 100% | 100% | 0.0 | 700.4 | 3% | 12.6 | 43.1 | 44.57 (43.85-46.07) | 1.19x | 1.19x |
+
+## sequential
+
+| config | mean us | p95 us | p99 us | hit | accuracy | wasted MiB | device MiB | cpu | RSS+ MiB | predictor ms | time s (min-max) | vs os-default | vs lru |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| os-default | 408 | 60 | 17062 | - | - | 0.0 | 750.0 | 4% | 0.0 | 0.0 | 8.87 (8.84-9.87) | 1.00x | 1.04x |
+| os-noreadahead | 779 | 804 | 1203 | - | - | 0.0 | 750.0 | 6% | 0.0 | 0.0 | 11.23 (11.03-11.42) | 0.79x | 0.82x |
+| lru | 468 | 132 | 16758 | 0% | - | 0.0 | 750.0 | 4% | 0.0 | 0.0 | 9.19 (8.72-9.47) | 0.97x | 1.00x |
+| sequential | 462 | 9 | 18086 | 100% | 100% | 0.0 | 750.0 | 6% | 38.2 | 27.4 | 9.42 (8.83-9.84) | 0.94x | 0.98x |
+| markov2 | 507 | 103 | 15717 | 0% | - | 0.0 | 750.0 | 5% | 0.4 | 39.7 | 9.55 (8.88-10.05) | 0.93x | 0.96x |
+| markov2+gate | 556 | 113 | 17250 | 0% | - | 0.0 | 750.0 | 5% | 0.0 | 42.1 | 9.81 (8.48-9.88) | 0.90x | 0.94x |
+| oracle | 502 | 9 | 23204 | 100% | 100% | 0.0 | 750.0 | 7% | 38.2 | 29.1 | 9.75 (9.37-9.76) | 0.91x | 0.94x |
+
+## random
+
+| config | mean us | p95 us | p99 us | hit | accuracy | wasted MiB | device MiB | cpu | RSS+ MiB | predictor ms | time s (min-max) | vs os-default | vs lru |
+| --- | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: | ---: |
+| os-default | 10024 | 15239 | 34920 | - | - | 0.0 | 728.5 | 1% | 0.0 | 0.0 | 66.72 (63.65-69.37) | 1.00x | 1.00x |
+| os-noreadahead | 9860 | 15197 | 34542 | - | - | 0.0 | 724.2 | 2% | 0.0 | 0.0 | 65.75 (65.05-67.04) | 1.01x | 1.01x |
+| lru | 10040 | 15423 | 36594 | 3% | - | 0.0 | 728.5 | 1% | 0.0 | 0.0 | 66.63 (63.29-68.54) | 1.00x | 1.00x |
+| sequential | 9527 | 14940 | 27317 | 3% | 0% | 1.5 | 734.5 | 1% | 0.1 | 7.0 | 63.58 (63.45-65.74) | 1.05x | 1.05x |
+| markov2 | 9798 | 15110 | 30775 | 3% | - | 0.0 | 728.5 | 2% | 0.0 | 52.5 | 65.24 (63.68-68.35) | 1.02x | 1.02x |
+| markov2+gate | 9694 | 14975 | 30042 | 3% | - | 0.0 | 728.5 | 1% | 0.0 | 50.8 | 64.62 (63.59-67.17) | 1.03x | 1.03x |
+| oracle | 7309 | 31594 | 42894 | 100% | 100% | 0.0 | 727.7 | 2% | 26.2 | 33.6 | 50.52 (48.87-52.42) | 1.32x | 1.32x |
+
+
+Done in 95.5 min. Results in results/real/peter-pc-final/ (runs.csv, summary.md)
