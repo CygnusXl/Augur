@@ -1,0 +1,9 @@
+{
+  "title": "Augur: Measuring When Predicting Data Makes It Faster to Move (code, data and measurements)",
+  "upload_type": "software",
+  "creators": [{"name": "Hansen, Peter"}],
+  "description": "Open-source testbed and measurements for the paper \"Augur: Measuring When Predicting Data Makes It Faster to Move\". Includes a byte-bounded cache, sequential, stride and Markov predictors, a confidence-gated prefetch scheduler, a trace-driven storage simulator, a real-I/O replay harness with cold-cache control, an exact integer-only context-mixing codec (augur-cm), a closed-form wire-time model, raw results, and the paper source. Experiment design, code and drafting were carried out with substantial assistance from Claude, an AI assistant from Anthropic; the author is responsible for the content.",
+  "keywords": ["prefetching", "lossless compression", "context mixing", "learned caching", "data transfer", "benchmarking"],
+  "license": "MIT",
+  "access_right": "open"
+}

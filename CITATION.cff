@@ -1,0 +1,26 @@
+cff-version: 1.2.0
+message: "If you use this software or the accompanying paper, please cite it as below."
+title: "Augur: Measuring When Predicting Data Makes It Faster to Move"
+type: software
+version: 0.3.0
+date-released: 2026-10-28
+license: MIT
+repository-code: "https://github.com/CygnusXl/Augur"
+authors:
+  - family-names: Hansen
+    given-names: Peter
+    email: peterhansen6002@gmail.com
+abstract: >-
+  A testbed that measures whether predicting data makes it faster to store and
+  transfer: a prefetch scheduler with sequential, stride and Markov predictors,
+  a trace-driven simulator, a real-I/O replay harness with cold-cache control,
+  and an exact integer-only context-mixing codec. Experiment design, code and
+  drafting were carried out with substantial assistance from Claude, an AI
+  assistant from Anthropic; the author is responsible for the content.
+keywords:
+  - prefetching
+  - lossless compression
+  - context mixing
+  - learned caching
+  - data transfer
+  - benchmarking
