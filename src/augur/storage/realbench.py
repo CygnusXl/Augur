@@ -16,6 +16,9 @@ Configurations
     markov1/markov2  LRU + learned-from-history prefetch
     markov2+gate     markov2 that backs off when prefetches are wasted
     oracle           clairvoyant upper bound (knows the future from the trace)
+    <name>-lazy      any application-cache configuration above, but the kernel keeps an item's
+                     pages until the application cache evicts it (instead of dropping them right
+                     after the read). Used to check whether the immediate drop disturbs kernel readahead.
 
 The access orders are still synthetic (see traces.py); the reads, the cache
 state, the CPU and memory costs are real. Results are specific to your
@@ -61,6 +64,7 @@ class RealSpec:
     policy: str = "lru"
     adaptive: bool = False
     readahead: bool = True
+    drop: str = "immediate"
 
 
 def _specs() -> Dict[str, RealSpec]:
@@ -70,6 +74,7 @@ def _specs() -> Dict[str, RealSpec]:
     }
     for name, s in SIM_CONFIGS.items():
         specs[name] = RealSpec(name, s.make_predictor, "app", s.policy, s.adaptive)
+        specs[name + "-lazy"] = RealSpec(name + "-lazy", s.make_predictor, "app", s.policy, s.adaptive, drop="on_evict")
     return specs
 
 
@@ -132,7 +137,7 @@ def collect(args: argparse.Namespace) -> tuple[List[Dict], List[Dict]]:
                     spec = REAL_CONFIGS[cn]
                     cfg = RealConfig(
                         cache_bytes=cache_bytes, policy=spec.policy, think_s=args.think_us * 1e-6,
-                        workers=args.workers, readahead=spec.readahead, mode=spec.mode,
+                        workers=args.workers, readahead=spec.readahead, mode=spec.mode, drop=spec.drop,
                     )
                     sched = PrefetchScheduler(
                         SchedulerConfig(threshold=args.threshold, depth=args.depth, adaptive=spec.adaptive)

@@ -221,6 +221,10 @@ class RealConfig:
     workers: int = 4
     readahead: bool = True
     mode: str = "app"  # "app": application cache + optional prefetch; "os": no app cache
+    # When the kernel is told to forget an item's pages: "immediate" = right after the application
+    # has read it; "on_evict" = when the application cache evicts it (so the kernel and the
+    # application hold the same items, and kernel readahead is left undisturbed in between).
+    drop: str = "immediate"
 
 
 def _pct(sorted_lat: List[float], p: float) -> float:
@@ -249,7 +253,11 @@ def run_real(
     df.evict_all()
     time.sleep(0.05)
 
-    def on_evict(_key, entry: Entry) -> None:
+    lazy = cfg.drop == "on_evict"
+
+    def on_evict(key, entry: Entry) -> None:
+        if lazy:
+            df.drop(key)
         if entry.prefetched and not entry.used:
             c["wasted_bytes"] += entry.size
             scheduler.record_outcome(False)
@@ -269,7 +277,8 @@ def run_real(
 
     def fetch(item: int) -> bytes:
         data = df.read(item)
-        df.drop(item)  # the application owns this copy now; do not double-cache in the kernel
+        if not lazy:
+            df.drop(item)  # the application owns this copy now; do not double-cache in the kernel
         return data
 
     def finalize() -> None:
@@ -280,6 +289,8 @@ def run_real(
             if not cache.put(item, sizes[item], fut.result(), prefetched=True):
                 c["wasted_bytes"] += sizes[item]
                 scheduler.record_outcome(False)
+                if lazy:
+                    df.drop(item)
 
     rss_reset = reset_peak_rss()
     rss0 = _status_kb("VmRSS")
@@ -326,7 +337,8 @@ def run_real(
             data = fetch(item)
             c["misses"] += 1
             c["demand_bytes"] += size
-            cache.put(item, size, data, prefetched=False)
+            if not cache.put(item, size, data, prefetched=False) and lazy:
+                df.drop(item)
         latencies.append(time.perf_counter() - t0)
 
         if use_prefetch:
